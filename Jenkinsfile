@@ -1,8 +1,8 @@
 pipeline {
     agent { node { label "maven" } }
     parameters {
-        string (name: 'INVOKER', defaultValue: 'John')
-        string (name: 'BRANCH', defaultValue: '')
+        string (name: 'INVOKER', defaultValue: 'Grega')
+        string (name: 'BRANCH', defaultValue: 'main')
     }
     environment {
         BRANCH_NAME = "main"
@@ -53,13 +53,31 @@ pipeline {
                 stage ("Run unit tests") {
                     agent { node { label "maven" } }
                     steps {
-                        sh 'mvn test'
+                        sh '''
+                            if [ -e /cache/artifacts.tar.gz ]; then
+                                mkdir -p /home/jenkins/.m2/repository
+                                tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
+                            fi
+                            ./mvnw test
+                            if [ -d /cache ]; then
+                                tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
+                            fi
+                        '''
                     }
                 }
                 stage ("Run verify - code coverage") {
                     agent { node { label "maven" } }
                     steps {
-                        sh 'mvn verify'
+                        sh '''
+                            if [ -e /cache/artifacts.tar.gz ]; then
+                                mkdir -p /home/jenkins/.m2/repository
+                                tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
+                            fi
+                            mvn verify
+                            if [ -d /cache ]; then
+                                tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
+                            fi
+                        '''
                     }
                 }
             }
