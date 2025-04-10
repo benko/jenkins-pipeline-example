@@ -7,7 +7,7 @@ pipeline {
         booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: true)
     }
     environment {
-        BRANCH_NAME = "main"
+        BRANCH_NAME = "${params.BRANCH}"
         QUAY_CREDS = credentials('QUAY_IO_CREDS')
     }
     stages {
