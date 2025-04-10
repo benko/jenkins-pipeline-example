@@ -45,6 +45,7 @@ pipeline {
         stage ("Clone git repository") {
             steps {
                 echo "Cloning branch ${BRANCH_NAME}"
+                sh 'env | sort'
             }
         }
     }
