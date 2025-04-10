@@ -1,4 +1,9 @@
+package com.redhat.training.greeter;
+
 import org.junit.jupiter.api.Test;
+
+import com.redhat.training.greeter.service.English;
+import com.redhat.training.greeter.service.Greeter;
 
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

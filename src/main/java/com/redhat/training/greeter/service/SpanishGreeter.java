@@ -1,3 +1,4 @@
+package com.redhat.training.greeter.service;
 import jakarta.enterprise.context.Dependent;
 
 @Spanish

@@ -1,3 +1,4 @@
+package com.redhat.training.greeter.old;
 public class GreeterOld {
     private String lang;
 
