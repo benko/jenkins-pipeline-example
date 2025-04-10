@@ -3,18 +3,14 @@ pipeline {
     parameters {
         string (name: 'INVOKER', defaultValue: 'Grega')
         string (name: 'BRANCH', defaultValue: 'main')
+        booleanValue (name: 'RESTORE_MAVEN_CACHE', defaultValue: 'true')
+        booleanValue (name: 'BACKUP_MAVEN_CACHE', defaultValue: 'true')
     }
     environment {
         BRANCH_NAME = "main"
         QUAY_CREDS = credentials('QUAY_IO_CREDS')
     }
     stages {
-        stage("Announce our start") {
-            steps {
-                echo "Hello ${params.INVOKER}, about to build Greeter service."
-                echo "Will use Quay.io credentials: username ${QUAY_CREDS_USR}"
-            }
-        }
         stage("Ask which branch of the repository to clone if not set") {
             when {
                 expression { params.BRANCH == '' }
@@ -34,7 +30,6 @@ pipeline {
                             )
                             BRANCH_NAME = response
                             echo "Got input response: ${response}"
-                            // echo "Cloning branch ${response}"
                         } catch (exc) {
                             echo "User input timed out: ${exc}"
                             echo "Proceeding with defaults."
@@ -42,6 +37,15 @@ pipeline {
                     }
                     echo "After INPUT stage: cloning ${BRANCH_NAME}"
                 }
+            }
+        }
+        stage("Announce our start parameters") {
+            steps {
+                echo "Hello ${params.INVOKER}, about to build Greeter service."
+                echo "Will use Quay.io credentials:"
+                echo "  username ${QUAY_CREDS_USR}"
+                echo "  password ${QUAY_CREDS_PWD}"
+                echo "Cloning branch ${BRANCH_NAME}"
             }
         }
         stage ("Clone git repository") {
@@ -56,14 +60,14 @@ pipeline {
                     agent { node { label "maven" } }
                     steps {
                         sh '''
-                            if [ -e /cache/artifacts.tar.gz ]; then
+                            if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
                                 tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
                                 echo "done."
                             fi
                             ./mvnw test
-                            if [ -d /cache ]; then
+                            if [ -d /cache ] && [ "${BACKUP_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Backing up maven cache..."
                                 tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
                                 echo "done."
@@ -75,14 +79,14 @@ pipeline {
                     agent { node { label "maven" } }
                     steps {
                         sh '''
-                            if [ -e /cache/artifacts.tar.gz ]; then
+                            if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
                                 tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
                                 echo "done."
                             fi
                             ./mvnw verify
-                            if [ -d /cache ]; then
+                            if [ -d /cache ] && [ "${BACKUP_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Backing up maven cache..."
                                 tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
                                 echo "done."
@@ -95,14 +99,14 @@ pipeline {
         stage("Build the Application") {
             steps {
                 sh '''
-                    if [ -e /cache/artifacts.tar.gz ]; then
+                    if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
                         echo -n "Restoring maven cache..."
                         mkdir -p /home/jenkins/.m2/repository
                         tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
                         echo "done."
                     fi
                     ./mvnw -DskipTests package
-                    if [ -d /cache ]; then
+                    if [ -d /cache ] && [ "${BACKUP_MAVEN_CACHE}" = "true" ]; then
                         echo -n "Backing up maven cache..."
                         tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
                         echo "done."
