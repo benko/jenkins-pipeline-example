@@ -32,8 +32,8 @@ pipeline {
                             echo "Got input response: ${response}"
                         } catch (exc) {
                             echo """
-                                User input timed out: ${exc}
-                                Proceeding with defaults.
+User input timed out: ${exc}
+Proceeding with defaults.
                             """
                         }
                     }
@@ -44,20 +44,19 @@ pipeline {
         stage("Log start parameters") {
             steps {
                 echo """
-                    Hello ${params.INVOKER}, about to build Greeter service.
+Hello ${params.INVOKER}, about to build Greeter service.
 
-                    Using the following Quay.io credentials:
-                      username: ${QUAY_CREDS_USR}
-                      password: ${QUAY_CREDS_PSW}
-                    
-                    Cloning branch "${BRANCH_NAME}"
+Using the following Quay.io credentials:
+    username: ${QUAY_CREDS_USR}
+    password: ${QUAY_CREDS_PSW}
+
+Cloning branch "${BRANCH_NAME}"
                 """
             }
         }
         stage ("Clone git repository") {
             steps {
                 echo "Cloning branch ${BRANCH_NAME} from ${GIT_URL}"
-                sh "pwd"
                 git url: "${GIT_URL}", branch: "${BRANCH_NAME}"
             }
         }
@@ -67,6 +66,10 @@ pipeline {
                     agent { node { label "maven" } }
                     steps {
                         sh '''
+                            pwd
+                            ls $HOME
+                            ls /tmp/workspace/greeting-pipeline
+                            #
                             if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
