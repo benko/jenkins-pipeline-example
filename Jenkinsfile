@@ -30,9 +30,9 @@ pipeline {
                                             defaultValue: "main")
                                 ]
                             )
-                            BRANCH_NAME = response.BRANCH_NAME
+                            BRANCH_NAME = response
                             echo "Got input response: ${response}"
-                            echo "Cloning branch ${response.BRANCH_NAME}"
+                            // echo "Cloning branch ${response}"
                         } catch (exc) {
                             echo "User input timed out: ${exc}"
                             echo "Proceeding with defaults."
