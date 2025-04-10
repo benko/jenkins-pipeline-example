@@ -55,12 +55,16 @@ pipeline {
                     steps {
                         sh '''
                             if [ -e /cache/artifacts.tar.gz ]; then
+                                echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
                                 tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
+                                echo "done."
                             fi
                             ./mvnw test
                             if [ -d /cache ]; then
+                                echo -n "Backing up maven cache..."
                                 tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
+                                echo "done."
                             fi
                         '''
                     }
@@ -70,12 +74,16 @@ pipeline {
                     steps {
                         sh '''
                             if [ -e /cache/artifacts.tar.gz ]; then
+                                echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
                                 tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
+                                echo "done."
                             fi
                             ./mvnw verify
                             if [ -d /cache ]; then
+                                echo -n "Backing up maven cache..."
                                 tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
+                                echo "done."
                             fi
                         '''
                     }
