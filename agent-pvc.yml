@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maven-artifact-storage
+  namespace: rhtuser-jenkins
+spec:
+  resources:
+    requests:
+      storage: 4Gi
+  accessModes:
+    - ReadWriteMany
+
