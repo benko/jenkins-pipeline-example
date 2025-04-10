@@ -1,0 +1,7 @@
+FROM image-registry.openshift-image-registry:5000/rhtuser-jenkins/jenkins-agent:base
+
+USER 0
+
+RUN yum -y install java-17-openjdk-devel java-21-openjdk-devel maven-openjdk17 && yum clean all && rm -rf /var/cache/dnf
+
+USER 1001
