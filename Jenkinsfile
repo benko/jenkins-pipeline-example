@@ -1,7 +1,7 @@
 pipeline {
     agent { node { label "maven" } }
     parameters {
-        string (name: 'INVOKER', defaultValue: 'John'),
+        string (name: 'INVOKER', defaultValue: 'John')
         string (name: 'BRANCH', defaultValue: '')
     }
     stages {
