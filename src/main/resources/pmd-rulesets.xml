@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset>
+<ruleset name="complexity">
     <description>Check Cyclomatic Complexity</description>
     <rule ref="category/java/design.xml/CyclomaticComplexity" />
 </ruleset>

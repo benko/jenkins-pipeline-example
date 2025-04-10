@@ -80,6 +80,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- Run this with "mvn pmd:pmd" -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.26.0</version>
@@ -88,11 +89,12 @@
                     <printFailingErrors>true</printFailingErrors>
                     <linkXRef>false</linkXRef>
                     <rulesets>
-                        <ruleset>pmd-rulesets.xml</ruleset>
+                        <ruleset>src/main/resources/pmd-rulesets.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Run this with "mvn checkstyle:checkstyle" -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.6.0</version>
@@ -100,9 +102,11 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <suppressionsLocation>src/main/resources/checkstyle-suppressions.xml</suppressionsLocation>
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Run this with "mvn verify" -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.13</version>
@@ -128,9 +132,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-                </configuration>
                 <reportSets>
                     <reportSet>
                     <reports>
