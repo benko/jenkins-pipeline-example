@@ -31,10 +31,7 @@ pipeline {
                             BRANCH_NAME = response
                             echo "Got input response: ${response}"
                         } catch (exc) {
-                            echo """
-User input timed out: ${exc}
-Proceeding with defaults.
-                            """
+                            echo "User input timed out: ${exc}\nProceeding with defaults."
                         }
                     }
                     echo "After INPUT stage: cloning ${BRANCH_NAME}"
@@ -58,15 +55,6 @@ Cloning branch "${BRANCH_NAME}"
             steps {
                 echo "Cloning branch ${BRANCH_NAME} from ${GIT_URL}"
                 git url: "${GIT_URL}", branch: "${BRANCH_NAME}"
-                sh '''
-                    pwd
-                    echo "**** curdir ****"
-                    ls
-                    echo "**** home ****"
-                    ls $HOME
-                    echo "**** workspace ****"
-                    ls /tmp/workspace/greeting-pipeline
-                '''
             }
         }
         stage ("Run unit & code coverage tests") {
@@ -75,10 +63,6 @@ Cloning branch "${BRANCH_NAME}"
                     agent { node { label "maven" } }
                     steps {
                         sh '''
-                            pwd
-                            ls $HOME
-                            ls /tmp/workspace/greeting-pipeline
-                            #
                             if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
                                 echo -n "Restoring maven cache..."
                                 mkdir -p /home/jenkins/.m2/repository
