@@ -4,6 +4,9 @@ pipeline {
         string (name: 'INVOKER', defaultValue: 'John')
         string (name: 'BRANCH', defaultValue: '')
     }
+    environment {
+        BRANCH_NAME = "main"
+    }
     stages {
         stage("Announce our start") {
             steps {
@@ -13,9 +16,6 @@ pipeline {
         stage("Ask which branch of the repository to clone if not set") {
             when {
                 expression { params.BRANCH == '' }
-            }
-            environment {
-                BRANCH_NAME = "main"
             }
             steps {
                 script {
@@ -39,8 +39,12 @@ pipeline {
                         }
                     }
                     echo "After INPUT stage: cloning ${BRANCH_NAME}"
-                    params.BRANCH = BRANCH_NAME
                 }
+            }
+        }
+        stage ("Clone git repository") {
+            steps {
+                echo "Cloning branch ${BRANCH_NAME}"
             }
         }
     }
