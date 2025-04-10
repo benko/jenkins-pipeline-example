@@ -7,11 +7,11 @@ pipeline {
         booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: true)
     }
     environment {
-        BRANCH_NAME = "${params.BRANCH}"
+        BRANCH_NAME = params.BRANCH
         QUAY_CREDS = credentials('QUAY_IO_CREDS')
     }
     stages {
-        stage("Ask which branch of the repository to clone if not set") {
+        stage("Ask which branch to clone if not set") {
             when {
                 expression { params.BRANCH == '' }
             }
@@ -20,11 +20,11 @@ pipeline {
                     timeout(time: 60, unit: "SECONDS") {
                         try {
                             def response = input(
-                                message: "What is the branch to clone (default is \"main\")?",
+                                message: "What is the branch to clone?",
                                 ok: "Proceed",
                                 parameters: [
                                     string(name: "BRANCH_NAME",
-                                            description: "The name of the branch to clone",
+                                            description: "The name of the branch to clone (default is \"main\")",
                                             defaultValue: "main")
                                 ]
                             )
@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage("Announce our start parameters") {
+        stage("Log start parameters") {
             steps {
                 echo "Hello ${params.INVOKER}, about to build Greeter service."
                 echo "Will use Quay.io credentials:"
@@ -75,7 +75,7 @@ pipeline {
                         '''
                     }
                 }
-                stage ("Run verify - code coverage") {
+                stage ("Run code coverage") {
                     agent { node { label "maven" } }
                     steps {
                         sh '''
