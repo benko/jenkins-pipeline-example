@@ -1,7 +1,8 @@
 pipeline {
     agent { node { label "maven" } }
     parameters {
-        string (name: 'INVOKER', defaultValue: 'John')
+        string (name: 'INVOKER', defaultValue: 'John'),
+        string (name: 'BRANCH', defaultValue: '')
     }
     stages {
         stage("Announce our start") {
@@ -14,6 +15,9 @@ pipeline {
                 BRANCH_NAME = "main"
             }
             steps {
+                when {
+                    expression { params.BRANCH == '' }
+                }
                 script {
                     timeout(time: 60, unit: "SECONDS") {
                         try {
