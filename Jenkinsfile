@@ -4,7 +4,7 @@ pipeline {
         string (name: 'INVOKER', defaultValue: 'Grega')
         string (name: 'BRANCH', defaultValue: 'main')
         booleanParam (name: 'RESTORE_MAVEN_CACHE', defaultValue: true)
-        booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: true)
+        booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: false)
     }
     environment {
         BRANCH_NAME = "${params.BRANCH}"
