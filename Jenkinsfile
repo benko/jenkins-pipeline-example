@@ -44,7 +44,7 @@ pipeline {
                 echo "Hello ${params.INVOKER}, about to build Greeter service."
                 echo "Will use Quay.io credentials:"
                 echo "  username ${QUAY_CREDS_USR}"
-                echo "  password ${QUAY_CREDS_PWD}"
+                echo "  password ${QUAY_CREDS_PSW}"
                 echo "Cloning branch ${BRANCH_NAME}"
             }
         }
