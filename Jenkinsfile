@@ -73,7 +73,7 @@ pipeline {
                                 mkdir -p /home/jenkins/.m2/repository
                                 tar xf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository
                             fi
-                            mvn verify
+                            ./mvnw verify
                             if [ -d /cache ]; then
                                 tar cf /cache/artifacts.tar.gz -C /home/jenkins/.m2/repository ./
                             fi
