@@ -46,25 +46,20 @@ pipeline {
             steps {
                 echo "Cloning branch ${BRANCH_NAME} from ${GIT_URL}"
                 git url: "${GIT_URL}", branch: "${BRANCH_NAME}"
-                sh '''
-                    ls
-                    pwd
-                '''
             }
         }
-        stage ("Run unit tests") {
-            steps {
-                sh '''
-                    ls
-                    mvn test
-                '''
-            }
-        }
-        stage ("Run verify - code coverage") {
-            steps {
-                sh '''
-                    mvn verify
-                '''
+        stage ("Run unit & code coverage tests") {
+            parallel {
+                stage ("Run unit tests") {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
+                stage ("Run verify - code coverage") {
+                    steps {
+                        sh 'mvn verify'
+                    }
+                }
             }
         }
     }
