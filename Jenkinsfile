@@ -6,11 +6,13 @@ pipeline {
     }
     environment {
         BRANCH_NAME = "main"
+        QUAY_CREDS = credentials('QUAY_IO_CREDS')
     }
     stages {
         stage("Announce our start") {
             steps {
                 echo "Hello ${params.INVOKER}, about to build Greeter service."
+                echo "Will use Quay.io credentials: username ${QUAY_CREDS_USR}"
             }
         }
         stage("Ask which branch of the repository to clone if not set") {
