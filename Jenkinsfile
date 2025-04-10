@@ -51,11 +51,13 @@ pipeline {
         stage ("Run unit & code coverage tests") {
             parallel {
                 stage ("Run unit tests") {
+                    agent { node { label "maven" } }
                     steps {
                         sh 'mvn test'
                     }
                 }
                 stage ("Run verify - code coverage") {
+                    agent { node { label "maven" } }
                     steps {
                         sh 'mvn verify'
                     }
