@@ -31,10 +31,10 @@ pipeline {
                             BRANCH_NAME = response
                             echo "Got input response: ${response}"
                         } catch (exc) {
-                            echo '''
+                            echo """
                                 User input timed out: ${exc}
                                 Proceeding with defaults.
-                            '''
+                            """
                         }
                     }
                     echo "After INPUT stage: cloning ${BRANCH_NAME}"
@@ -43,7 +43,7 @@ pipeline {
         }
         stage("Log start parameters") {
             steps {
-                echo '''
+                echo """
                     Hello ${params.INVOKER}, about to build Greeter service.
 
                     Using the following Quay.io credentials:
@@ -51,7 +51,7 @@ pipeline {
                       password: ${QUAY_CREDS_PSW}
                     
                     Cloning branch "${BRANCH_NAME}"
-                '''
+                """
             }
         }
         stage ("Clone git repository") {
