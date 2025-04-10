@@ -58,6 +58,15 @@ Cloning branch "${BRANCH_NAME}"
             steps {
                 echo "Cloning branch ${BRANCH_NAME} from ${GIT_URL}"
                 git url: "${GIT_URL}", branch: "${BRANCH_NAME}"
+                sh '''
+                    pwd
+                    echo "**** curdir ****"
+                    ls
+                    echo "**** home ****"
+                    ls $HOME
+                    echo "**** workspace ****"
+                    ls /tmp/workspace/greeting-pipeline
+                '''
             }
         }
         stage ("Run unit & code coverage tests") {
