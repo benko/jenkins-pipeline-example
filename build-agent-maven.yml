@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    name: jenkins-agent
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - from:
+        kind: DockerImage
+        name: registry.redhat.io/ocp-tools-4/jenkins-agent-base-rhel9:v4.16.0
+      importPolicy: {}
+      name: base
+      referencePolicy:
+        type: Source
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    name: jenkins-agent
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: jenkins-agent:maven
+    postCommit: {}
+    resources: {}
+    source:
+      git:
+        uri: https://github.com/rhtuser/demoproject.git
+      type: Git
+    strategy:
+      dockerStrategy:
+        dockerfilePath: Containerfile-agent-maven
+        from:
+          kind: ImageStreamTag
+          name: jenkins-agent:base
+          namespace: rhtuser-jenkins
+      type: Docker
