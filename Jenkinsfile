@@ -44,8 +44,24 @@ pipeline {
         }
         stage ("Clone git repository") {
             steps {
-                echo "Cloning branch ${BRANCH_NAME}"
-                sh 'env | sort'
+                echo "Cloning branch ${BRANCH_NAME} from ${GIT_URL}"
+                git url: "${GIT_URL}", branch: "${BRANCH_NAME}"
+            }
+        }
+        stage ("Run unit tests") {
+            steps {
+                sh '''
+                    cd demoproject
+                    mvn test
+                '''
+            }
+        }
+        stage ("Run verify - code coverage") {
+            steps {
+                sh '''
+                    cd demoproject
+                    mvn verify
+                '''
             }
         }
     }
