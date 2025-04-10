@@ -10,14 +10,14 @@ pipeline {
                 echo "Hello ${params.INVOKER}, about to build Greeter service."
             }
         }
-        stage("Clone the repository") {
+        stage("Ask which branch of the repository to clone if not set") {
+            when {
+                expression { params.BRANCH == '' }
+            }
             environment {
                 BRANCH_NAME = "main"
             }
             steps {
-                when {
-                    expression { params.BRANCH == '' }
-                }
                 script {
                     timeout(time: 60, unit: "SECONDS") {
                         try {
@@ -38,8 +38,9 @@ pipeline {
                             echo "Proceeding with defaults."
                         }
                     }
+                    echo "After INPUT stage: cloning ${BRANCH_NAME}"
+                    params.BRANCH = BRANCH_NAME
                 }
-                echo "After INPUT stage: cloning ${BRANCH_NAME}"
             }
         }
     }
