@@ -18,8 +18,8 @@ pipeline {
                     timeout(time: 60, unit: "SECONDS") {
                         try {
                             def response = input(
-                                message: "What is the branch to clone (default is \"main\")?"
-                                ok: "Proceed"
+                                message: "What is the branch to clone (default is \"main\")?",
+                                ok: "Proceed",
                                 parameters: [
                                     string(name: "BRANCH_NAME",
                                             description: "The name of the branch to clone",
