@@ -1,10 +1,12 @@
 pipeline {
+    // TODO: add comments
     agent { node { label "maven" } }
     parameters {
         string (name: 'INVOKER', defaultValue: 'Grega')
         string (name: 'BRANCH', defaultValue: 'main')
         booleanParam (name: 'RESTORE_MAVEN_CACHE', defaultValue: true)
         booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: false)
+        string (name: 'TARGET_PROJECT', defaultValue: 'rhtuser-greeter')
     }
     environment {
         BRANCH_NAME = "${params.BRANCH}"
@@ -99,7 +101,8 @@ Cloning branch "${BRANCH_NAME}"
                 }
             }
         }
-        stage("Build the Application") {
+        /*
+        stage("Build the Application Traditionally") {
             steps {
                 sh '''
                     if [ -e /cache/artifacts.tar.gz ] && [ "${RESTORE_MAVEN_CACHE}" = "true" ]; then
@@ -116,6 +119,18 @@ Cloning branch "${BRANCH_NAME}"
                     fi
                 '''
                 archiveArtifacts 'target/*-runner.jar'
+            }
+        }
+        */
+        stage("Build the Application in its Target Project using a BuildConfig") {
+            steps {
+                sh '''
+                    oc -n ${TARGET_PROJECT} delete bc,is -l build=greeter
+                    oc -n ${TARGET_PROJECT} new-build --name greeter --image-stream openjdk:21 --strategy source ${GIT_URL}#${BRANCH_NAME}
+                    echo "Waiting for build to start..."
+                    sleep 10
+                    oc logs -f bc/greeter
+                '''
             }
         }
     }
