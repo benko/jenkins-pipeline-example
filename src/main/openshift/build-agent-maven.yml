@@ -33,7 +33,7 @@ items:
       type: Git
     strategy:
       dockerStrategy:
-        dockerfilePath: Containerfile-agent-maven
+        dockerfilePath: src/main/openshift/Containerfile-agent-maven
         from:
           kind: ImageStreamTag
           name: jenkins-agent:base

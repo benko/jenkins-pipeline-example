@@ -1,3 +1,6 @@
+# This will take the base jenkins agent image and install JDK 17 and 21, and Maven, on top.
 FROM registry.redhat.io/ocp-tools-4/jenkins-agent-base-rhel9:v4.16.0
+# This should be unnecessary, but just in case.
 USER 0
+# All we need is the Java compilers, really, but to speed things up, let's add Maven, too.
 RUN yum -y install java-17-openjdk-devel java-21-openjdk-devel maven-openjdk17 && yum clean all && rm -rf /var/cache/dnf
