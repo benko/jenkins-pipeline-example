@@ -152,5 +152,18 @@ Cloning branch "${BRANCH_NAME}"
                 '''
             }
         }
+        stage("Deploy the Application if not yet there") {
+            steps {
+                sh '''
+                    if [ -z "$(oc -n ${TARGET_PROJECT} get deploy/greeter -o name)" ]; then
+                        # deployment does not exist, create it and expose it
+                        oc -n ${TARGET_PROJECT} new-app --name greeter --image-stream greeter:latest
+                        oc -n ${TARGET_PROJECT} expose svc/greeter
+                    else
+                        echo "Nothing to do, deployment already there and being updated."
+                    fi
+                '''
+            }
+        }
     }
 }
