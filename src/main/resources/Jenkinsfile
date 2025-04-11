@@ -6,10 +6,12 @@ pipeline {
         string (name: 'BRANCH', defaultValue: 'main')
         booleanParam (name: 'RESTORE_MAVEN_CACHE', defaultValue: true)
         booleanParam (name: 'BACKUP_MAVEN_CACHE', defaultValue: false)
+        booleanParam (name: 'SKIP_TESTS', defaultValue: false)
         string (name: 'TARGET_PROJECT', defaultValue: 'rhtuser-greeter')
     }
     environment {
         BRANCH_NAME = "${params.BRANCH}"
+        TARGET_PROJECT = "${params.TARGET_PROJECT}"
         QUAY_CREDS = credentials('QUAY_IO_CREDS')
     }
     stages {
@@ -60,6 +62,9 @@ Cloning branch "${BRANCH_NAME}"
             }
         }
         stage ("Run unit & code coverage tests") {
+            when {
+                expression { params.SKIP_TESTS == false }
+            }
             parallel {
                 stage ("Run unit tests") {
                     agent { node { label "maven" } }
