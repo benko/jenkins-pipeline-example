@@ -130,11 +130,25 @@ Cloning branch "${BRANCH_NAME}"
         stage("Build the Application in its Target Project using a BuildConfig") {
             steps {
                 sh '''
-                    oc -n ${TARGET_PROJECT} delete bc,is -l build=greeter
-                    oc -n ${TARGET_PROJECT} new-build --name greeter --image-stream openjdk:21 --strategy source ${GIT_URL}#${BRANCH_NAME}
-                    echo "Waiting for build to start..."
-                    sleep 10
-                    oc -n ${TARGET_PROJECT} logs -f bc/greeter
+                    if [ -z "$(oc -n ${TARGET_PROJECT} get bc/greeter -o name)" ]; then
+                        # buildconfig does not exist, create it and immediately cancel any builds
+                        oc -n ${TARGET_PROJECT} new-build --name greeter --image-stream openjdk:21 --strategy source ${GIT_URL}#${BRANCH_NAME}
+                        oc -n ${TARGET_PROJECT} cancel-build bc/greeter
+                        # patch the buildconfig to be incremental
+                        oc -n ${TARGET_PROJECT} patch bc/greeter --type=merge -p '{"spec": {"strategy": {"sourceStrategy": {"incremental": true}}}}'
+                    fi
+                    # start the build and follow the logs
+                    oc -n ${TARGET_PROJECT} start-build -F bc/greeter
+                    # what is this build's name?
+                    BUILD_NAME="$(oc get builds -l build=greeter --sort-by=metadata.creationTimestamp -o name | tail -n1)"
+                    # did it succeed?
+                    BUILD_STATUS="$(oc get ${BUILD_NAME} -o jsonpath='{.status.phase}')"
+                    if [ "${BUILD_STATUS}" != "Complete" ]; then
+                        echo "ERROR: Build did not complete successfully: phase=${BUILD_STATUS}"
+                        exit 1
+                    else
+                        echo "SUCCESS: Build completed."
+                    fi
                 '''
             }
         }
