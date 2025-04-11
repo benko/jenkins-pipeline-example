@@ -134,15 +134,15 @@ Cloning branch "${BRANCH_NAME}"
                         # buildconfig does not exist, create it and immediately cancel any builds
                         oc -n ${TARGET_PROJECT} new-build --name greeter --image-stream openjdk:21 --strategy source ${GIT_URL}#${BRANCH_NAME}
                         oc -n ${TARGET_PROJECT} cancel-build bc/greeter
-                        # patch the buildconfig to be incremental
-                        oc -n ${TARGET_PROJECT} patch bc/greeter --type=merge -p '{"spec": {"strategy": {"sourceStrategy": {"incremental": true}}}}'
                     fi
+                    # patch the buildconfig to be incremental and have a runPolicy of SerialLatestOnly
+                    oc -n ${TARGET_PROJECT} patch bc/greeter --type=merge -p '{"spec": {"runPolicy": "SerialLatestOnly", "strategy": {"sourceStrategy": {"incremental": true}}}}'
                     # start the build and follow the logs
                     oc -n ${TARGET_PROJECT} start-build -F bc/greeter
                     # what is this build's name?
-                    BUILD_NAME="$(oc get builds -l build=greeter --sort-by=metadata.creationTimestamp -o name | tail -n1)"
+                    BUILD_NAME="$(oc -n ${TARGET_PROJECT} get builds -l build=greeter --sort-by=metadata.creationTimestamp -o name | tail -n1)"
                     # did it succeed?
-                    BUILD_STATUS="$(oc get ${BUILD_NAME} -o jsonpath='{.status.phase}')"
+                    BUILD_STATUS="$(oc -n ${TARGET_PROJECT} get ${BUILD_NAME} -o jsonpath='{.status.phase}')"
                     if [ "${BUILD_STATUS}" != "Complete" ]; then
                         echo "ERROR: Build did not complete successfully: phase=${BUILD_STATUS}"
                         exit 1
