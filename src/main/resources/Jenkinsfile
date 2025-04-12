@@ -1,5 +1,4 @@
 pipeline {
-    // TODO: add comments
     agent { node { label "maven" } }
     parameters {
         string (name: 'INVOKER', defaultValue: 'Grega')
